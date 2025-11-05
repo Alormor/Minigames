@@ -15,6 +15,7 @@ window.onload = ()=>{
     beginReflexGame();
     beginNumberHunt();
     beginSimonSays();
+    beginButtonRace();
 }
 
 function beginHuntColor(){
@@ -228,7 +229,7 @@ function beginSimonSays(){
     let level = 0;
     let highscore = 0;
     let canClick = false;
-    let chosenCell;
+    let chosenCell, myColoredCell;
 
     myLevel.innerHTML = "No level";
     myMessage.innerHTML = "Press Start to play";
@@ -276,6 +277,16 @@ function beginSimonSays(){
             if(chosenCell == sequence[counter]){
                 myMessage.innerHTML = "&#9989; Correct, next one!";
                 counter++;
+
+                myColoredCell = document.getElementById(chosenCell);
+                // Turning color on
+                myColoredCell.style.opacity = "50%";
+
+                // Turning color off
+                setTimeout(() => {
+                    myColoredCell.style.opacity = "100%";
+                }, 250);
+
             // If different, you've lost and reset everything.
             }else{
                 myBtn.disabled = false;
@@ -314,18 +325,60 @@ function generateColorSS(){
 }
 
 function showSequence(sequence){
-    let myCell;
     sequence.forEach((cell, i) => {
         // Turning color on
         setTimeout(() => {
-            myCell = document.getElementById(cell);
+            let myCell = document.getElementById(cell);
             myCell.style.opacity = "50%";
         }, i * timer);
 
         // Turning color off
         setTimeout(() => {
-            myCell = document.getElementById(cell);
+            let myCell = document.getElementById(cell);
             myCell.style.opacity = "100%";
         }, i * timer + timerDelay);
     });
+}
+
+// BUTTON RACE
+/*
+Objective: Click a button repeatedly to "progress" on a bar.
+Interface:
+    - A "Run" button.
+    - A progress bar.
+JS: Each click increments the progress bar a bit.
+Events: click
+*/
+function beginButtonRace(){
+    let myBtn = document.getElementById("run");
+    let myBar = document.getElementById("progress");
+    let result = document.getElementById("result");
+    let timeDiff, startTime, endTime;
+
+    result.innerHTML = "Click start"; 
+
+    myBtn.addEventListener("click", (e)=>{
+        myBar.background = "red";
+        if(myBtn.innerHTML=="Start"){
+            startTime = new Date();
+            myBtn.innerHTML = "Run";
+            result.innerHTML = "Click fast!";
+        }
+
+        myBar.value += 5;
+
+        if(myBar.value == 100){
+            endTime = new Date();
+            timeDiff = (endTime - startTime)/1000;
+            result.innerHTML = "You took "+timeDiff+" seconds.";
+            myBar.value = 0;
+            myBtn.innerHTML = "Reset";
+            
+            myBtn.disabled = true; // Disable button
+            setTimeout(()=>{
+                myBtn.disabled = false;
+                myBtn.innerHTML = "Start";
+            }, 3000);
+        }
+    })
 }
